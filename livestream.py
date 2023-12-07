@@ -7,6 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 import json
 from datetime import datetime
 import pytz
+import subprocess
 
 def page_has_loaded(driver):
     return driver.execute_script("return document.readyState;") == "complete"
@@ -122,4 +123,12 @@ finally:
     with open('livestream.json', 'w') as json_file:
         json.dump(data_to_dump, json_file, indent=4)
 
-    driver.quit()
+    # Git commands to add, commit, and push the changes
+    try:
+    	subprocess.run(["git", "add", "."], check=True)
+    	subprocess.run(["git", "commit", "-m", "update json"], check=True)
+    	subprocess.run(["git", "push"], check=True)
+    except subprocess.CalledProcessError as e:
+    	print(f"An error occurred while executing Git commands: {e}")
+    finally:
+    	driver.quit()
