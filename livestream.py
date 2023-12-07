@@ -100,26 +100,30 @@ try:
             # If match info is not found, add None
             match.update({'Home': None, 'Home_Logo': None, 'Away': None, 'Away_Logo': None})
 
-    # Save the updated URLs and additional info in a JSON file
-    with open('livestream.json', 'w') as json_file:
-        json.dump(url_list, json_file, indent=4)
-
 except NoSuchElementException:
     print("There is No Live Match.")
 
-finally:
-    # Get the current time in GMT+7
-    timezone = pytz.timezone('Etc/GMT-7')
-    current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
+# Extract the token from the first iframe URL
+token_value = ""
+if url_list and 'iframe_src' in url_list[0]:
+    first_iframe_url = url_list[0]['iframe_src']
+    token_start_index = first_iframe_url.find('&token=')
+    if token_start_index != -1:
+        token_value = first_iframe_url[token_start_index:]
 
-    # Prepare the data to be dumped into JSON
-    data_to_dump = {
-        "matches": url_list,
-        "timestamp": current_time
-    }
+# Get the current time in GMT+7
+timezone = pytz.timezone('Etc/GMT-7')
+current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
 
-    # Write the data to the JSON file
-    with open('livestream.json', 'w') as json_file:
-        json.dump(data_to_dump, json_file, indent=4)
+# Prepare the data to be dumped into JSON
+data_to_dump = {
+    "matches": url_list,
+    "token": token_value,  # Add the token here
+    "timestamp": current_time
+}
 
-    driver.quit()
+# Write the data to the JSON file
+with open('livestream.json', 'w') as json_file:
+    json.dump(data_to_dump, json_file, indent=4)
+
+driver.quit()
