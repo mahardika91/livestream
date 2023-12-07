@@ -2,12 +2,8 @@
     "matches": [
         {
             "match_detail": "https://scorevisit.com/match/dhamk-vs-al-ittihad-18898129",
-            "iframe_src": "https://live-streamfootball.com/wowhaha.php?m3u8=https%3A%2F%2Flivecdn.rumsport.com%2Fstream%2F2%2Findex.m3u8&parent=scorevisit.com&matchdate=1701961200&token=195ced2a37a566938076396fd18fcb8fc2171542.true.1701961200-QBBREWKDa2yPTVR6pEhvetNF%2B2tO4xCSpq1pkL4uWf4%3D&is_vip=true",
-            "Home": "Dhamk",
-            "Home_Logo": "https://i0.wp.com/image-sm-1.scorevisit.com/images/soccer/teams/16/17712.png",
-            "Away": "Al Ittihad",
-            "Away_Logo": "https://i0.wp.com/image-sm-1.scorevisit.com/images/soccer/teams/28/476.png"
+            "iframe_src": "about:blank"
         }
     ],
-    "timestamp": "2023-12-08 00:02:54"
+    "timestamp": "2023-12-08 00:04:22"
 }
