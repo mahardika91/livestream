@@ -119,4 +119,4 @@ while True:
             print(f"An error occurred while executing Git commands: {e}")
 
         # Wait for 30 seconds before rerunning the script
-        time.sleep(30)
+        time.sleep(60)
