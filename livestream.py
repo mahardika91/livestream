@@ -45,8 +45,6 @@ login_button = WebDriverWait(driver, 10).until(
 )
 login_button.click()
 
-driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
 url_list = []
 
 try:
@@ -56,62 +54,32 @@ try:
     first_div_no_class = list_fixtures_div.find_element(By.XPATH, "./div[not(@class)]")
     watch_now_links = first_div_no_class.find_elements(By.CSS_SELECTOR, 'a.b-btn.b-btn-watch-red.is-rounded.text-xs.link-nested')
 
-    # Populate url_list with match details
-    for link in watch_now_links:
-        match_url = link.get_attribute('href')
-        url_list.append({'match_detail': match_url})
-
-    # Iterate over each match URL to find the iframe and match info
-    for match in url_list:
-        match_url = match['match_detail']
-        driver.get(match_url)
+    # Get the first match URL
+    if watch_now_links:
+        first_match_url = watch_now_links[0].get_attribute('href')
+        driver.get(first_match_url)
         WebDriverWait(driver, 10).until(lambda driver: page_has_loaded(driver))
 
-        # Find the iframe
         try:
             iframe = WebDriverWait(driver, 10).until(
                 EC.presence_of_element_located((By.TAG_NAME, 'iframe'))
             )
             iframe_src = iframe.get_attribute('src')
-            match['iframe_src'] = iframe_src
+            token_start_index = iframe_src.find('&token=')
+            if token_start_index != -1:
+                token_end_index = iframe_src.find('&', token_start_index + 1)
+                if token_end_index == -1:
+                    token_value = iframe_src[token_start_index + len('&token='):]
+                else:
+                    token_value = iframe_src[token_start_index + len('&token='):token_end_index]
         except NoSuchElementException:
-            match['iframe_src'] = None
-
-        # Find match information
-        try:
-            match_info_div = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, 'match-info-wrapper'))
-            )
-
-            # Extract Home Team Name and Logo
-            home_team = match_info_div.find_element(By.CSS_SELECTOR, 'div.club-wrapper:first-child span.club-name a').text.strip()
-            home_logo = match_info_div.find_element(By.CSS_SELECTOR, 'div.club-wrapper:first-child img.club-image').get_attribute('src')
-
-            # Extract Away Team Name and Logo
-            away_team = match_info_div.find_element(By.CSS_SELECTOR, 'div.club-wrapper:last-child span.club-name a').text.strip()
-            away_logo = match_info_div.find_element(By.CSS_SELECTOR, 'div.club-wrapper:last-child img.club-image').get_attribute('src')
-
-            # Add to the match dictionary
-            match['Home'] = home_team
-            match['Home_Logo'] = home_logo
-            match['Away'] = away_team
-            match['Away_Logo'] = away_logo
-        except NoSuchElementException:
-            # If match info is not found, add None
-            match.update({'Home': None, 'Home_Logo': None, 'Away': None, 'Away_Logo': None})
+            token_value = ""
 
 except NoSuchElementException:
+    token_value = ""
     print("There is No Live Match.")
 
-# Extract the token from the first iframe URL
-token_value = ""
-if url_list and 'iframe_src' in url_list[0]:
-    first_iframe_url = url_list[0]['iframe_src']
-    token_start_index = first_iframe_url.find('&token=')
-    if token_start_index != -1:
-        token_value = first_iframe_url[token_start_index:]
-
-# Check if the token is not empty before exporting to JSON
+# Check if token_value is empty before writing to JSON
 if token_value:
     # Get the current time in GMT+7
     timezone = pytz.timezone('Etc/GMT-7')
@@ -119,7 +87,6 @@ if token_value:
 
     # Prepare the data to be dumped into JSON
     data_to_dump = {
-        "matches": url_list,
         "token": token_value,  # Add the token here
         "timestamp": current_time
     }
