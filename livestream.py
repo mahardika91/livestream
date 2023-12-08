@@ -7,6 +7,8 @@ from selenium.common.exceptions import NoSuchElementException
 import json
 from datetime import datetime
 import pytz
+import os
+
 
 def page_has_loaded(driver):
     return driver.execute_script("return document.readyState;") == "complete"
@@ -46,6 +48,7 @@ login_button = WebDriverWait(driver, 10).until(
 login_button.click()
 
 url_list = []
+token_value = ""
 
 try:
     list_fixtures_div = WebDriverWait(driver, 10).until(
@@ -76,23 +79,32 @@ try:
             token_value = ""
 
 except NoSuchElementException:
-    token_value = ""
     print("There is No Live Match.")
 
 # Check if token_value is empty before writing to JSON
 if token_value:
-    # Get the current time in GMT+7
-    timezone = pytz.timezone('Etc/GMT-7')
-    current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
+    old_token_value = None
 
-    # Prepare the data to be dumped into JSON
-    data_to_dump = {
-        "token": token_value,  # Add the token here
-        "timestamp": current_time
-    }
+    # Check if the JSON file already exists
+    if os.path.exists('livestream.json'):
+        with open('livestream.json', 'r') as json_file:
+            data = json.load(json_file)
+            old_token_value = data.get("token", None)
 
-    # Write the data to the JSON file
-    with open('livestream.json', 'w') as json_file:
-        json.dump(data_to_dump, json_file, indent=4)
+    # Write to JSON only if the new token is different from the old token
+    if token_value != old_token_value:
+        # Get the current time in GMT+7
+        timezone = pytz.timezone('Etc/GMT-7')
+        current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
+
+        # Prepare the data to be dumped into JSON
+        data_to_dump = {
+            "token": token_value,  # Add the new token here
+            "timestamp": current_time
+        }
+
+        # Write the new data to the JSON file
+        with open('livestream.json', 'w') as json_file:
+            json.dump(data_to_dump, json_file, indent=4)
 
 driver.quit()
