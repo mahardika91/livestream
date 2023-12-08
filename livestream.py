@@ -111,19 +111,21 @@ if url_list and 'iframe_src' in url_list[0]:
     if token_start_index != -1:
         token_value = first_iframe_url[token_start_index:]
 
-# Get the current time in GMT+7
-timezone = pytz.timezone('Etc/GMT-7')
-current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
+# Check if the token is not empty before exporting to JSON
+if token_value:
+    # Get the current time in GMT+7
+    timezone = pytz.timezone('Etc/GMT-7')
+    current_time = datetime.now(timezone).strftime('%Y-%m-%d %H:%M:%S')
 
-# Prepare the data to be dumped into JSON
-data_to_dump = {
-    "matches": url_list,
-    "token": token_value,  # Add the token here
-    "timestamp": current_time
-}
+    # Prepare the data to be dumped into JSON
+    data_to_dump = {
+        "matches": url_list,
+        "token": token_value,  # Add the token here
+        "timestamp": current_time
+    }
 
-# Write the data to the JSON file
-with open('livestream.json', 'w') as json_file:
-    json.dump(data_to_dump, json_file, indent=4)
+    # Write the data to the JSON file
+    with open('livestream.json', 'w') as json_file:
+        json.dump(data_to_dump, json_file, indent=4)
 
 driver.quit()
