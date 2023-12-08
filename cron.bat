@@ -2,7 +2,7 @@
 :loop
 python livestream.py
 git add .
-git commit -m "update json"
+git commit 'm' 'fixture'
 git push
-timeout /t 5
+timeout /t 10
 goto loop
