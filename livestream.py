@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -8,7 +9,6 @@ import json
 from datetime import datetime
 import pytz
 import os
-
 
 def page_has_loaded(driver):
     return driver.execute_script("return document.readyState;") == "complete"
@@ -27,8 +27,15 @@ url = "https://scorevisit.com/login"
 username = "itctrlr@gmail.com"
 password = "Ungu4150645#"
 
-driver = webdriver.Chrome(options=chrome_options)
+PATH = "C:\\Users\\Administrator1\\Desktop\\scrape\\livestream\\chromedriver.exe"
+
+# Create a Service object with the path to chromedriver
+service = Service(executable_path=PATH)
+
+# Initialize the Chrome WebDriver with the specified options
+driver = webdriver.Chrome(service=service, options=chrome_options)
 driver.get(url)
+
 
 WebDriverWait(driver, 10).until(lambda driver: page_has_loaded(driver))
 
