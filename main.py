@@ -83,6 +83,7 @@ def open_website_and_extract_iframe():
 # Main loop to run the function indefinitely with a 10-second delay
 while True:
     try:
+        os.system('cls')  # Clear the console for Windows
         open_website_and_extract_iframe()
         print("Script executed successfully. Waiting 10 seconds to re-run...")
     except Exception as e:
