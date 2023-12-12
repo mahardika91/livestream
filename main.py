@@ -46,15 +46,24 @@ def open_website_and_extract_iframe():
         login_button = driver.find_element(By.CLASS_NAME, "btn-submit")
         login_button.click()
 
+        extracted_token = None
         try:
             watch_now_link = wait.until(EC.presence_of_element_located((By.XPATH, "//a[contains(text(),'Watch Now')]")))
             link = watch_now_link.get_attribute('href')
             driver.get(link)
-            iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
-            iframe_src = iframe.get_attribute('src')
-            start = iframe_src.find("&token=") + len("&token=")
-            end = iframe_src.find("&is_vip=true")
-            extracted_token = iframe_src[start:end]
+            try:
+                iframe = wait.until(EC.presence_of_element_located((By.TAG_NAME, "iframe")))
+                iframe_src = iframe.get_attribute('src')
+                start = iframe_src.find("&token=") + len("&token=")
+                end = iframe_src.find("&is_vip=true")
+                if start != -1 and end != -1 and end > start:
+                    extracted_token = iframe_src[start:end]
+            except Exception as iframe_error:
+                print("Error finding iframe or extracting token:", iframe_error)
+        except Exception as watch_now_error:
+            print("Error finding 'Watch Now' link:", watch_now_error)
+
+        if extracted_token:
             current_time = datetime.datetime.now(pytz.timezone('Asia/Bangkok'))
             formatted_time = current_time.strftime("%Y-%m-%d %H:%M:%S")
             filename = "livestream.json"
@@ -74,10 +83,13 @@ def open_website_and_extract_iframe():
                 print("Changes pushed to the repository.")
             else:
                 print("Token is unchanged. No new file exported.")
-        except Exception as e:
-            print("Error finding 'Watch Now' link or navigating to it:", e)
-    except Exception as e:
-        print(f"An error occurred during login: {e}")
+        else:
+            print("No valid token extracted.")
+
+    except Exception as login_error:
+        print(f"An error occurred during login: {login_error}")
+
+    # Close the browser
     driver.quit()
 
 # Main loop to run the function indefinitely with a 10-second delay
