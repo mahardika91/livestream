@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
@@ -27,10 +28,9 @@ url = "https://scorevisit.com/login"
 username = "itctrlr@gmail.com"
 password = "Ungu4150645#"
 
-PATH = "C:\\Users\\Administrator1\\Desktop\\scrape\\livestream\\chromedriver.exe"
 
 # Create a Service object with the path to chromedriver
-service = Service(executable_path=PATH)
+service = Service(ChromeDriverManager().install())
 
 # Initialize the Chrome WebDriver with the specified options
 driver = webdriver.Chrome(service=service, options=chrome_options)
